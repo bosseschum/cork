@@ -66,7 +66,7 @@ The frontend follows a hierarchical, modular component boundary design:
 
 In ECMAScript Modules (ESM), exported variables are live, read-only bindings to the module's memory space.
 
-- **The Issue:** If another file imports `let todos` from `routes/todos.ts` and attempts to reassign it (`todos = []`), JavaScript throws a `TypeError: Assignment to constant variable` (or similar bundler/runtime error) because external modules cannot reassign an exported binding.
+- **The Issue:** If another file imports `let todos` from `routes/todos.ts` and attempts to reassign it (`todos = []`), JavaScript throws a `TypeScript compile-time error about assigning to an imported binding` (or similar bundler/runtime error) because external modules cannot reassign an exported binding.
 - **The Decision:** The route handlers in `routes/todos.ts` hold direct ownership of the in-memory array. The array is updated _within_ the module itself via `todos = updatedTodos;` (which is permitted), ensuring external consumers always receive the latest live reference, but cannot mutate the binding.
 
 ### 2. Immutability & Why React Cares
@@ -80,7 +80,7 @@ Our domain models (`models/todo.ts`) use immutable operations (e.g., array sprea
 When a domain model function fails to find an entity (e.g., during toggle or delete), it raises an exception.
 
 - **The Trade-Off:** I chose to implement a custom class `NotFoundError extends Error` instead of checking error strings (e.g., `error.message === 'Todo not found'`).
-- **Why?** Runtime string-matching is incredibly fragile. A simple typo, internationalization, or a minor refactoring of the error message would quietly break the API's status-code logic (mapping to 500 instead of 404). Checking `error instanceof NotFoundError` is robust, compile-time safe, and highly explicit.
+- **Why?** Runtime string-matching is incredibly fragile. A simple typo, internationalization, or a minor refactoring of the error message would quietly break the API's status-code logic (mapping to 500 instead of 404). Checking at compile time here is that error is properly narrowed to type NotFoundError inside the if block and highly explicit.
 
 ### 4. Controlled vs. Native `<dialog>` Modal State
 
@@ -142,5 +142,3 @@ Open your browser and navigate to `http://localhost:5173` to view the dashboard!
 
 1.  **Persisted Storage:** Currently, the backend maintains state in-memory. Restarting the backend server resets the todo list. The next step is adding SQLite or PostgreSQL integration.
 2.  **Weather Widget (`Weather.tsx`)**: The frontend currently contains an empty placeholder component for the Weather widget. Implementing this with a free weather API (e.g., OpenWeatherMap) is planned.
-3.  **Todo Editing:** Adding the ability to double-click a todo to edit its text (switching from toggle-on-double-click to a dedicated inline input or editing modal).
-4.  **Set-Semantics Refactor:** Refactoring the PATCH endpoint to support a JSON payload for complete idempotence.

@@ -2,8 +2,12 @@ import { Router } from "express";
 import z from "zod";
 
 import type { Todo } from "../schemas/todo.js";
-import { addTodo, toggleTodo, deleteTodo } from "../models/todo.js";
-import { CreateTodoSchema } from "../schemas/todo.js";
+import { addTodo, deleteTodo, updateTodo } from "../models/todo.js";
+import {
+  CreateTodoSchema,
+  UpdateTodoSchema,
+  PartialUpdateTodoSchema,
+} from "../schemas/todo.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 
 export const todosRouter = Router();
@@ -32,11 +36,14 @@ todosRouter.post("/", (req, res) => {
 todosRouter.patch("/:id", (req, res) => {
   try {
     const { id } = req.params;
-    const updatedTodos = toggleTodo(todos, id);
+    const updates = PartialUpdateTodoSchema.parse(req.body);
+    const updatedTodos = updateTodo(todos, id, updates);
     todos = updatedTodos;
     res.json(updatedTodos);
   } catch (error) {
-    if (error instanceof NotFoundError) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.issues });
+    } else if (error instanceof NotFoundError) {
       res.status(404).json({ error: error.message });
     } else if (error instanceof Error) {
       res.status(400).json({ error: error.message });

@@ -11,4 +11,11 @@ export const CreateTodoSchema = z.object({
   text: z.string(),
 });
 
+export const UpdateTodoSchema = z.object({
+  text: z.string(),
+  completed: z.boolean(),
+});
+export const PartialUpdateTodoSchema = UpdateTodoSchema.partial();
+export type UpdateTodoInput = z.infer<typeof PartialUpdateTodoSchema>;
+
 export type Todo = z.infer<typeof TodoSchema>;

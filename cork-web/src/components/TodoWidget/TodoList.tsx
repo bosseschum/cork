@@ -114,7 +114,7 @@ function TodoList() {
         return;
       }
 
-      setTodos(parsed.data.filter((todo) => todo.id !== id));
+      setTodos(parsed.data);
       setError(null);
     } catch (error) {
       console.error("Error deleting todo:", error);
@@ -123,10 +123,14 @@ function TodoList() {
   };
 
   const toggleTodo = async (id: string) => {
+    const target = todos.find((t) => t.id === id);
+    if (!target) return;
+
     try {
       const response = await fetch(`${API_URL}/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: !target.completed }),
       });
 
       if (!response.ok) throw new Error("Failed to toggle Todo");
@@ -143,6 +147,35 @@ function TodoList() {
       setError(null);
     } catch (error) {
       console.error("Error toggling todo:", error);
+      setError(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  const updateTodoText = async (id: string, newText: string) => {
+    // 1. Immediately update UI state
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
+    );
+
+    // 2. Persist to API
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: newText }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update todo");
+
+      const data = await response.json();
+      const parsed = z.array(TodoSchema).safeParse(data);
+
+      // If backend returns the full array, update with verified data
+      if (parsed.success) {
+        setTodos(parsed.data);
+      }
+    } catch (error) {
+      console.error("Error updating todo:", error);
       setError(error instanceof Error ? error.message : String(error));
     }
   };
@@ -204,6 +237,7 @@ function TodoList() {
                 todo={todo}
                 deleteTodo={deleteTodo}
                 toggleTodo={toggleTodo}
+                updateTodoText={updateTodoText}
               />
             ))}
           </ul>
