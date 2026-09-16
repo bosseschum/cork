@@ -152,12 +152,10 @@ function TodoList() {
   };
 
   const updateTodoText = async (id: string, newText: string) => {
-    // 1. Immediately update UI state
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
     );
 
-    // 2. Persist to API
     try {
       const response = await fetch(`${API_URL}/${id}`, {
         method: "PATCH",
@@ -170,7 +168,6 @@ function TodoList() {
       const data = await response.json();
       const parsed = z.array(TodoSchema).safeParse(data);
 
-      // If backend returns the full array, update with verified data
       if (parsed.success) {
         setTodos(parsed.data);
       }

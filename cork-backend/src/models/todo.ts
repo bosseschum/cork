@@ -15,16 +15,6 @@ export const addTodo = (todos: Todo[], text: string): Todo[] => {
   return [...todos, newTodo];
 };
 
-// export const toggleTodo = (todos: Todo[], id: string): Todo[] => {
-//   if (!exists(todos, id)) {
-//     throw new NotFoundError("Todo not found");
-//   }
-
-//   return todos.map((todo) =>
-//     todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-//   );
-// };
-
 export const deleteTodo = (todos: Todo[], id: string): Todo[] => {
   if (!exists(todos, id)) {
     throw new NotFoundError("Todo not found");

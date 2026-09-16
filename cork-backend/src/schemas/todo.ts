@@ -11,7 +11,7 @@ export const CreateTodoSchema = z.object({
   text: z.string(),
 });
 
-export const UpdateTodoSchema = z.object({
+const UpdateTodoSchema = z.object({
   text: z.string(),
   completed: z.boolean(),
 });
