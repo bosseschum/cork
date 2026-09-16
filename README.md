@@ -96,11 +96,15 @@ I utilized the modern HTML `<dialog>` element for the "Add Todo" interface.
 
 ### 6. Toggle-Semantics vs. Set-Semantics for PATCH
 
-- **The Trade-Off:** The `PATCH /todos/:id` endpoint accepts no request body and simply toggles the `completed` flag on the server.
-- **Why?**
-  - _Toggle-Semantics (Current):_ Extremely concise, requiring no body-validation schemas or merge logic on the backend.
-  - _Set-Semantics:_ Accepting `{ completed: boolean }` is more robust, idempotent (multiple identical calls guarantee the exact same state), and extensible for editing other fields (like the todo's text).
-  - I prioritized toggle simplicity for the initial dashboard, but recognize that set-semantics are preferred for more complex, race-resistant APIs.
+~~- **The Trade-Off:** The `PATCH /todos/:id` endpoint accepts no request body and simply toggles the `completed` flag on the server.~~
+~~- **Why?**
+
+- _Toggle-Semantics (Current):_ Extremely concise, requiring no body-validation schemas or merge logic on the backend.
+- _Set-Semantics:_ Accepting `{ completed: boolean }` is more robust, idempotent (multiple identical calls guarantee the exact same state), and extensible for editing other fields (like the todo's text).
+- I prioritized toggle simplicity for the initial dashboard, but recognize that set-semantics are preferred for more complex, race-resistant APIs.~~
+
+- **Finally:**
+- Decided on _Set-Semantics:_ Accepting `{ completed: boolean }` is more robust, idempotent (multiple identical calls guarantee the exact same state), and extensible for editing other fields like editing the todo's text.
 
 ---
 
