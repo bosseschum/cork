@@ -3,11 +3,7 @@ import z from "zod";
 
 import type { Todo } from "../schemas/todo.js";
 import { addTodo, deleteTodo, updateTodo } from "../models/todo.js";
-import {
-  CreateTodoSchema,
-  UpdateTodoSchema,
-  PartialUpdateTodoSchema,
-} from "../schemas/todo.js";
+import { CreateTodoSchema, PartialUpdateTodoSchema } from "../schemas/todo.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 
 export const todosRouter = Router();
