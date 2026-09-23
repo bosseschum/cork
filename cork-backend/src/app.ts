@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { todosRouter } from "./routes/todos.js";
 import { weatherRouter } from "./routes/weather.js";
+import { quotesRouter } from "./routes/quotes.js";
 
 export const app = express();
 
@@ -19,3 +20,4 @@ app.get("/", (req, res) => {
 
 app.use("/todos", todosRouter);
 app.use("/weather", weatherRouter);
+app.use("/quotes", quotesRouter);
