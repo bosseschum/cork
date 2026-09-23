@@ -1,8 +1,31 @@
-import {
-  WeatherRawResponseSchema,
-  WeatherResponseSchema,
-} from "../schemas/weather.js";
+import { WeatherRawResponseSchema } from "../schemas/weather.js";
 import type { WeatherQuery, WeatherResponse } from "../schemas/weather.js";
+
+async function getLocationName(lat: number, lon: number): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+      {
+        headers: {
+          "User-Agent": "cork-web-app",
+        },
+      },
+    );
+    if (!res.ok) return `${lat},${lon}`;
+
+    const data = await res.json();
+    const addr = data.address;
+    return (
+      addr.city ||
+      addr.town ||
+      addr.village ||
+      addr.municipality ||
+      data.display_name
+    );
+  } catch {
+    return `${lat},${lon}`;
+  }
+}
 
 export async function getWeather(
   query: WeatherQuery,
@@ -11,9 +34,14 @@ export async function getWeather(
   if (!apiKey) {
     throw new Error("Missing API key: VISUAL_CROSSING_KEY is not set");
   }
+
   const { lat, lon, location } = query;
+  const searchTarget = location || `${lat},${lon}`;
+
   const response = await fetch(
-    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location || lat + "," + lon}?unitGroup=metric&key=${apiKey}`,
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(
+      searchTarget,
+    )}?unitGroup=metric&key=${apiKey}`,
   );
 
   if (!response.ok) {
@@ -27,11 +55,16 @@ export async function getWeather(
     throw new Error("Failed to parse weather data");
   }
 
+  let resolvedLocation = parsed.data.resolvedAddress;
+  if (!location && lat !== undefined && lon !== undefined) {
+    resolvedLocation = await getLocationName(lat, lon);
+  }
+
   const current = parsed.data.currentConditions;
   const forecast = parsed.data.days.slice(1, 6);
 
-  const weather: WeatherResponse = {
-    location: parsed.data.resolvedAddress,
+  return {
+    location: resolvedLocation,
     currentTemp: current.temp,
     currentConditions: current.conditions,
     forecast: forecast.map((day) => ({
@@ -42,6 +75,4 @@ export async function getWeather(
       icon: day.icon,
     })),
   };
-
-  return WeatherResponseSchema.parse(weather);
 }

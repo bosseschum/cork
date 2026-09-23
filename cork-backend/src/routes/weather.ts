@@ -6,14 +6,8 @@ import z from "zod";
 export const weatherRouter = Router();
 
 weatherRouter.get("/", async (req, res) => {
-  const { lat, lon, location } = req.query;
-  const query = {
-    lat,
-    lon,
-    location: location as string,
-  };
   try {
-    const partialQuery = WeatherQuerySchema.parse(query);
+    const partialQuery = WeatherQuerySchema.parse(req.query);
     const weather = await getWeather(partialQuery);
     res.json(weather);
   } catch (error) {

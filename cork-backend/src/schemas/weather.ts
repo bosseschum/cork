@@ -5,7 +5,13 @@ export const WeatherQuerySchema = z
     lat: z.coerce.number().optional(),
     lon: z.coerce.number().optional(),
     location: z.string().optional(),
+    q: z.string().optional(),
   })
+  .transform((q) => ({
+    lat: q.lat,
+    lon: q.lon,
+    location: q.location || q.q,
+  }))
   .refine((q) => !!q.location || (q.lat !== undefined && q.lon !== undefined), {
     message: "Provide either a location or lat/lon coordinates",
   });
@@ -17,6 +23,7 @@ export const WeatherRawResponseSchema = z.object({
   currentConditions: z.object({
     temp: z.number(),
     conditions: z.string(),
+    icon: z.string(),
   }),
   days: z.array(
     z.object({

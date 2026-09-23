@@ -1,4 +1,5 @@
 import TodoList from "./components/TodoWidget/TodoList";
+import Weather from "./components/WeatherWidget/Weather";
 
 function App() {
   return (
@@ -6,6 +7,9 @@ function App() {
       <div className="row justify-content-center">
         <div className="col-12 col-md-8 col-lg-6">
           <TodoList />
+        </div>
+        <div className="col-12 col-md-8 col-lg-6">
+          <Weather />
         </div>
       </div>
     </main>
