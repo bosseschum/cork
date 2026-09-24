@@ -3,7 +3,6 @@ import * as z from "zod";
 export const QuoteSchema = z.object({
   q: z.string(),
   a: z.string(),
-  h: z.string().optional(),
 });
 
 export const QuoteQuerySchema = z.object({

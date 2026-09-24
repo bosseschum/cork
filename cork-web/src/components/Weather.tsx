@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { WeatherResponseSchema } from "../../schemas/weather";
-import type { WeatherResponse } from "../../schemas/weather";
+import { WeatherResponseSchema } from "../schemas/weather";
+import type { WeatherResponse } from "../schemas/weather";
 
 function Weather() {
   const isGeolocationSupported =

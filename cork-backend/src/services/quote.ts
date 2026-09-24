@@ -4,7 +4,7 @@ import z from "zod";
 
 const API_URL = "https://zenquotes.io/api/today/";
 
-export async function getQuote(): Promise<Quote> {
+export async function getQuote(): Promise<{ quote: string; author: string }> {
   const response = await fetch(API_URL);
 
   if (!response.ok) {
@@ -18,11 +18,14 @@ export async function getQuote(): Promise<Quote> {
     throw new Error("Invalid quote data received from API");
   }
 
-  const quote = parsed.data[0];
+  const rawQuote = parsed.data[0];
 
-  if (!quote) {
+  if (!rawQuote) {
     throw new Error("No quote found in API response");
   }
 
-  return quote;
+  return {
+    quote: rawQuote.q,
+    author: rawQuote.a,
+  };
 }
